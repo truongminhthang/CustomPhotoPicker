@@ -22,9 +22,24 @@ class AssetGridViewController: UICollectionViewController {
             guard _itemSize != nil else {return}
             let flowLayout = (collectionViewLayout as! UICollectionViewFlowLayout)
             flowLayout.itemSize = _itemSize!
-            flowLayout.minimumLineSpacing = 0
-            flowLayout.minimumInteritemSpacing = 0
+            flowLayout.minimumLineSpacing = CollectionViewLayout.minimumInteritemSpacing
+            flowLayout.minimumInteritemSpacing = CollectionViewLayout.minimumInteritemSpacing
 
+        }
+    }
+    
+    struct CollectionViewLayout {
+        static let numberOfItemInRow :CGFloat = 4
+        static let edgeInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
+        static var edgeInsetLeftAndRight : CGFloat {
+            return edgeInset.left + edgeInset.right
+        }
+        
+        static let minimumInteritemSpacing : CGFloat = 1
+    
+        static var totalInteritemSpacing : CGFloat {
+            return (numberOfItemInRow - 1) * minimumInteritemSpacing
         }
     }
     
@@ -42,9 +57,8 @@ class AssetGridViewController: UICollectionViewController {
     
     
     func updateThumbnailSize() {
-        let numberOfItemInRow : CGFloat = 4.0
         let bounds =  UIScreen.main.bounds
-        let size = bounds.width / numberOfItemInRow
+        let size = (bounds.width - CollectionViewLayout.edgeInsetLeftAndRight - CollectionViewLayout.totalInteritemSpacing) /  CollectionViewLayout.numberOfItemInRow
         _itemSize = CGSize(width: size, height: size)
         let scale = UIScreen.main.scale
         thumbnailSize = CGSize(width: size * scale, height: size * scale)
@@ -71,9 +85,12 @@ class AssetGridViewController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        resetItemSize()
+    }
+    
+    func resetItemSize() {
         _itemSize = nil
-       _ = itemSize
-        
+        _ = itemSize
     }
 
 
