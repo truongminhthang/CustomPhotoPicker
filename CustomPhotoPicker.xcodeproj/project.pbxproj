@@ -8,20 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		FFF6202C1E9DE5A3007A2EBE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF6202B1E9DE5A3007A2EBE /* AppDelegate.swift */; };
-		FFF6202E1E9DE5A3007A2EBE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF6202D1E9DE5A3007A2EBE /* ViewController.swift */; };
 		FFF620311E9DE5A3007A2EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FFF6202F1E9DE5A3007A2EBE /* Main.storyboard */; };
 		FFF620331E9DE5A3007A2EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FFF620321E9DE5A3007A2EBE /* Assets.xcassets */; };
 		FFF620361E9DE5A3007A2EBE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FFF620341E9DE5A3007A2EBE /* LaunchScreen.storyboard */; };
+		FFF620401E9DE606007A2EBE /* AssetGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF6203F1E9DE606007A2EBE /* AssetGridViewController.swift */; };
+		FFF620421E9DE723007A2EBE /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF620411E9DE723007A2EBE /* GridViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		FFF620281E9DE5A2007A2EBE /* CustomPhotoPicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomPhotoPicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFF6202B1E9DE5A3007A2EBE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FFF6202D1E9DE5A3007A2EBE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		FFF620301E9DE5A3007A2EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FFF620321E9DE5A3007A2EBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FFF620351E9DE5A3007A2EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FFF620371E9DE5A3007A2EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FFF6203F1E9DE606007A2EBE /* AssetGridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetGridViewController.swift; sourceTree = "<group>"; };
+		FFF620411E9DE723007A2EBE /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +56,23 @@
 		FFF6202A1E9DE5A2007A2EBE /* CustomPhotoPicker */ = {
 			isa = PBXGroup;
 			children = (
-				FFF6202B1E9DE5A3007A2EBE /* AppDelegate.swift */,
-				FFF6202D1E9DE5A3007A2EBE /* ViewController.swift */,
 				FFF6202F1E9DE5A3007A2EBE /* Main.storyboard */,
+				FFF6203F1E9DE606007A2EBE /* AssetGridViewController.swift */,
+				FFF620411E9DE723007A2EBE /* GridViewCell.swift */,
+				FFF6203D1E9DE5C7007A2EBE /* Supporting files */,
+			);
+			path = CustomPhotoPicker;
+			sourceTree = "<group>";
+		};
+		FFF6203D1E9DE5C7007A2EBE /* Supporting files */ = {
+			isa = PBXGroup;
+			children = (
+				FFF6202B1E9DE5A3007A2EBE /* AppDelegate.swift */,
 				FFF620321E9DE5A3007A2EBE /* Assets.xcassets */,
 				FFF620341E9DE5A3007A2EBE /* LaunchScreen.storyboard */,
 				FFF620371E9DE5A3007A2EBE /* Info.plist */,
 			);
-			path = CustomPhotoPicker;
+			name = "Supporting files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,8 +148,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFF6202E1E9DE5A3007A2EBE /* ViewController.swift in Sources */,
+				FFF620401E9DE606007A2EBE /* AssetGridViewController.swift in Sources */,
 				FFF6202C1E9DE5A3007A2EBE /* AppDelegate.swift in Sources */,
+				FFF620421E9DE723007A2EBE /* GridViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
