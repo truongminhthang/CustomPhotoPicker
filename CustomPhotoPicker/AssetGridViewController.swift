@@ -24,12 +24,20 @@ class AssetGridViewController: UICollectionViewController {
             flowLayout.itemSize = _itemSize!
             flowLayout.minimumLineSpacing = CollectionViewLayout.minimumInteritemSpacing
             flowLayout.minimumInteritemSpacing = CollectionViewLayout.minimumInteritemSpacing
+            
+            let scale = UIScreen.main.scale
+            thumbnailSize = (_itemSize ?? CGSize.zero) * scale
+
 
         }
     }
     
     struct CollectionViewLayout {
-        static let numberOfItemInRow :CGFloat = 4
+        
+        static var numberOfItemInRow : CGFloat {
+            let isPortrait = UIScreen.main.bounds.width < UIScreen.main.bounds.height
+            return isPortrait ? 4.0 : 6.0
+        }
         static let edgeInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         static var edgeInsetLeftAndRight : CGFloat {
@@ -41,6 +49,13 @@ class AssetGridViewController: UICollectionViewController {
         static var totalInteritemSpacing : CGFloat {
             return (numberOfItemInRow - 1) * minimumInteritemSpacing
         }
+        
+        static var itemSize : CGSize {
+            let bounds =  UIScreen.main.bounds
+            let size = (bounds.width - edgeInsetLeftAndRight - totalInteritemSpacing) / numberOfItemInRow
+            return CGSize(width: size, height: size)
+            
+        }
     }
     
     var itemSize: CGSize {
@@ -49,19 +64,10 @@ class AssetGridViewController: UICollectionViewController {
         }
         get {
             if _itemSize == nil {
-                updateThumbnailSize()
+                _itemSize = CollectionViewLayout.itemSize
             }
             return _itemSize ?? CGSize.zero
         }
-    }
-    
-    
-    func updateThumbnailSize() {
-        let bounds =  UIScreen.main.bounds
-        let size = (bounds.width - CollectionViewLayout.edgeInsetLeftAndRight - CollectionViewLayout.totalInteritemSpacing) /  CollectionViewLayout.numberOfItemInRow
-        _itemSize = CGSize(width: size, height: size)
-        let scale = UIScreen.main.scale
-        thumbnailSize = CGSize(width: size * scale, height: size * scale)
     }
     
     private var thumbnailSize = CGSize.zero
@@ -74,15 +80,25 @@ class AssetGridViewController: UICollectionViewController {
         // so match the behavior of segue from the default "All Photos" view.
         if fetchResult == nil {
             let allPhotosOptions = PHFetchOptions()
-            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
         }
+        registerNotification()
+    }
+    
+    func registerNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceDidRotate), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
     deinit {
+        NotificationCenter.default.removeObserver(self)
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
+
     }
-    
+    func deviceDidRotate(notification: NSNotification) {
+        resetItemSize()
+    }
+   
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         resetItemSize()
@@ -180,5 +196,13 @@ extension AssetGridViewController: PHPhotoLibraryChangeObserver {
                 collectionView!.reloadData()
             }
         }
+    }
+}
+
+// MARK: - <#Mark#>
+
+extension CGSize {
+    static func * (size: CGSize, factory: CGFloat) -> CGSize {
+        return CGSize(width: size.width * factory, height: size.height * factory)
     }
 }
