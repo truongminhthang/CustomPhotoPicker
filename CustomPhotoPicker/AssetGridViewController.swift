@@ -17,41 +17,45 @@ class AssetGridViewController: UICollectionViewController {
     
     
     fileprivate let imageManager = PHCachingImageManager()
-    private var _thumbnailSize: CGSize?
-    
-    var thumbnailSize: CGSize {
-        set {
-            _thumbnailSize = newValue
-        }
-        get {
-            if _thumbnailSize == nil {
-                updateThumbnailSize()
-            }
-            return _thumbnailSize ?? []
+    fileprivate var _itemSize: CGSize? {
+        didSet {
+            guard _itemSize != nil else {return}
+            let flowLayout = (collectionViewLayout as! UICollectionViewFlowLayout)
+            flowLayout.itemSize = _itemSize!
+            flowLayout.minimumLineSpacing = 0
+            flowLayout.minimumInteritemSpacing = 0
+
         }
     }
+    
+    var itemSize: CGSize {
+        set {
+            _itemSize = newValue
+        }
+        get {
+            if _itemSize == nil {
+                updateThumbnailSize()
+            }
+            return _itemSize ?? CGSize.zero
+        }
+    }
+    
     
     func updateThumbnailSize() {
         let numberOfItemInRow : CGFloat = 4.0
-        if let bounds = AppDelegate.shared.window?.bounds {
-            
-            let size = bounds.width / numberOfItemInRow
-            let scale = UIScreen.main.scale
-            
-            return CGSize(width: size * scale, height: size * scale)
-        }
-        return CGSize.zero
+        let bounds =  UIScreen.main.bounds
+        let size = bounds.width / numberOfItemInRow
+        _itemSize = CGSize(width: size, height: size)
+        let scale = UIScreen.main.scale
+        thumbnailSize = CGSize(width: size * scale, height: size * scale)
     }
-    fileprivate var thumbnailSize: CGSize = {
-        
-    }()
     
+    private var thumbnailSize = CGSize.zero
     fileprivate var previousPreheatRect = CGRect.zero
 
     override func viewDidLoad() {
         super.viewDidLoad()
         PHPhotoLibrary.shared().register(self)
-        
         // If we get here without a segue, it's because we're visible at app launch,
         // so match the behavior of segue from the default "All Photos" view.
         if fetchResult == nil {
@@ -67,11 +71,8 @@ class AssetGridViewController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Determine the size of the thumbnails to request from the PHCachingImageManager
-        let scale = UIScreen.main.scale
-        let cellSize = (collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-        thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+        _itemSize = nil
+       _ = itemSize
         
     }
 
@@ -118,6 +119,7 @@ class AssetGridViewController: UICollectionViewController {
                 cell.thumbnailImage = image
             }
         })
+        cell.backgroundColor = UIColor.red
         
         return cell
         
