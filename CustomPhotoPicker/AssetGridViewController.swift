@@ -128,34 +128,41 @@ class AssetGridViewController: UICollectionViewController {
     // MARK: UICollectionViewDataSource
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchResult.count
+        return fetchResult.count + 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let asset = fetchResult.object(at: indexPath.item)
-        
         // Dequeue a GridViewCell.
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: GridViewCell.self), for: indexPath) as? GridViewCell
             else { fatalError("unexpected cell in collection view") }
-        
-        // Add a badge to the cell if the PHAsset represents a Live Photo.
-        if asset.mediaSubtypes.contains(.photoLive) {
-            cell.livePhotoBadgeImage = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
-        }
-        
-        // Request an image for the asset from the PHCachingImageManager.
-        cell.representedAssetIdentifier = asset.localIdentifier
-        imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
-            // The cell may have been recycled by the time this handler gets called;
-            // set the cell's thumbnail image only if it's still showing the same asset.
-            if cell.representedAssetIdentifier == asset.localIdentifier {
-                cell.thumbnailImage = image
+
+        if indexPath.item == 0 {
+            cell.thumbnailImage = #imageLiteral(resourceName: "Compact Camera_ff00ff_100")
+            cell.imageView.contentMode = .center
+        } else {
+            let indexPathItem = indexPath.item - 1
+            let asset = fetchResult.object(at: indexPathItem)
+            // Add a badge to the cell if the PHAsset represents a Live Photo.
+            if asset.mediaSubtypes.contains(.photoLive) {
+                cell.livePhotoBadgeImage = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
             }
-        })
-        cell.backgroundColor = UIColor.red
-        
+            // Request an image for the asset from the PHCachingImageManager.
+            cell.representedAssetIdentifier = asset.localIdentifier
+            imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+                // The cell may have been recycled by the time this handler gets called;
+                // set the cell's thumbnail image only if it's still showing the same asset.
+                if cell.representedAssetIdentifier == asset.localIdentifier {
+                    cell.thumbnailImage = image
+                }
+            })
+        }
         return cell
-        
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item == 0 {
+            takePhoto()
+        }
     }
 }
 
@@ -178,10 +185,10 @@ extension AssetGridViewController: PHPhotoLibraryChangeObserver {
                     // For indexes to make sense, updates must be in this order:
                     // delete, insert, reload, move
                     if let removed = changes.removedIndexes, removed.count > 0 {
-                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: 0) }))
+                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0 - 1, section: 0) }))
                     }
                     if let inserted = changes.insertedIndexes, inserted.count > 0 {
-                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: 0) }))
+                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0 + 1, section: 0) }))
                     }
                     if let changed = changes.changedIndexes, changed.count > 0 {
                         collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: 0) }))
@@ -197,6 +204,48 @@ extension AssetGridViewController: PHPhotoLibraryChangeObserver {
             }
         }
     }
+}
+
+/* add to info.plist
+
+ */
+
+// MARK: - UIImagePickerControllerDelegate
+
+extension AssetGridViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        // Dismiss the picker if the user canceled.
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let chosenImage = info[UIImagePickerControllerEditedImage] as? UIImage //2
+        saveImage(image: chosenImage!)
+        dismiss(animated:true, completion: nil) //5
+    }
+    
+    func takePhoto() {
+        unowned let weakself = self
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = weakself as UIImagePickerControllerDelegate & UINavigationControllerDelegate
+            imagePicker.sourceType = UIImagePickerControllerSourceType.camera;
+            imagePicker.allowsEditing = true
+            weakself.present(imagePicker, animated: true, completion: nil)
+        } else {
+            
+        }
+    }
+    
+    func saveImage(image: UIImage) {
+        PHPhotoLibrary.shared().performChanges({
+            _ = PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }, completionHandler: { (success, error) in
+            
+        })
+    }
+
 }
 
 // MARK: - <#Mark#>

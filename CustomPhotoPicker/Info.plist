@@ -36,5 +36,7 @@
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>I need access Photo library </string>
+    <key>NSCameraUsageDescription</key>
+    <string>Used to capture new image for photo effect</string>
 </dict>
 </plist>

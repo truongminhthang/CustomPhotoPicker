@@ -30,5 +30,6 @@ class GridViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
         livePhotoBadgeImageView.image = nil
+        imageView.contentMode = .scaleAspectFill
     }
 }
